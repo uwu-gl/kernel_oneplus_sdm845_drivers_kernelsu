@@ -34,7 +34,7 @@ jobs:
           git clone https://github.com/tiann/KernelSU ~/remote
           git clone https://github.com/uwu-gl/kernel_oneplus_sdm845_drivers_kernelsu ~/staging -b main-wip
           cd ~/staging && rm -rf *
-          cp ~/remote/kernel/* .
+          cp -r ~/remote/kernel/* .
           rm -f setup.sh
           touch ksu_version.txt 
           echo "${{ env.kernelsu_release }}" > ksu_version.txt 
