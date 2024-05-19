@@ -19,13 +19,9 @@ jobs:
           
       - name: Check remote release
         run: |
-          kernelsu_release=`curl https://api.github.com/repos/tiann/KernelSU/releases/latest | jq -r .tag_name`
-          local_release=$(cat ksu_version.txt)
-          echo $kernelsu_release
-          echo $local_release
-          echo kernelsu_release=$kernelsu_release >> $GITHUB_ENV
-          echo local_release=$local_release >> $GITHUB_ENV
-
+          echo "kernelsu_release=`curl https://api.github.com/repos/tiann/KernelSU/releases/latest | jq -r .tag_name`" >> $GITHUB_ENV
+          echo "local_release=$(cat ksu_version.txt)" >> $GITHUB_ENV
+          
       - name: Set up environment
         if: kernelsu_release != local_release
         run: |
