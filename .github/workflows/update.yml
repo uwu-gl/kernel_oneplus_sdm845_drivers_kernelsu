@@ -29,14 +29,15 @@ jobs:
           git config --global user.name github-actions[bot]
           git config --global user.email 41898282+github-actions[bot]@users.noreply.github.com
           git clone https://github.com/tiann/KernelSU ~/remote && cd ~/remote
-          echo "version_ksu=$[$(git rev-list --count HEAD)+10200]" >> $GITHUB_ENV
+          version_ksu=$[$(git rev-list --count HEAD)+10200]
           git clone https://github.com/uwu-gl/kernel_oneplus_sdm845_drivers_kernelsu ~/staging -b main-wip
           cd ~/staging && rm -rf *
           cp -r ~/remote/kernel/* .
-          rm -f setup.sh ksu_version.txt
-          sed -i '19,30c ccflags-y += -DKSU_VERSION=${{ env.version_ksu }}' ./Makefile
+          rm -f setup.sh
+          sed -i "19,30c ccflags-y += -DKSU_VERSION=$version_ksu" ./Makefile
+          echo "${{ env.kernelsu_release }}" > ksu_version.txt
           echo "### Diffs" && git diff && echo "### End of diffs"
-          git add . && git commit -sm "drivers: kernelsu: Bump version to ${{ env.version_ksu }} (${{ env.kernelsu_release }})"
+          git add . && git commit -sm "drivers: kernelsu: Bump version to $version_ksu (${{ env.kernelsu_release }})"
           git push
           
         
