@@ -26,8 +26,8 @@ jobs:
         if: ${{ env.kernelsu_release }} != ${{ env.local_release }}
         run: |
           bash
-          git config --global user.name github-actions[bot]
-          git config --global user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git config --global user.name gl-automation
+          git config --global user.email moegluwu01@gmail.com
           git clone https://github.com/tiann/KernelSU ~/remote && cd ~/remote
           version_ksu=$[$(git rev-list --count HEAD)+10200]
           git clone https://github.com/uwu-gl/kernel_oneplus_sdm845_drivers_kernelsu ~/staging -b main-wip
@@ -41,6 +41,9 @@ jobs:
       
       - name: Push changes
         uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.TOKEN }}
+          branch: main-wip
 
           
         
