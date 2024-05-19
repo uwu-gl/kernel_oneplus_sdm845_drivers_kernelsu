@@ -22,9 +22,8 @@ jobs:
           echo "kernelsu_release=`curl https://api.github.com/repos/tiann/KernelSU/releases/latest | jq -r .tag_name`" >> $GITHUB_ENV
           echo "local_release=$(cat ksu_version.txt)" >> $GITHUB_ENV
         
-      - name: Update
-        if: ${{ env.kernelsu_release }} != ${{ env.local_release }}
       - uses: actions/checkout@v4
+        if: ${{ env.kernelsu_release }} != ${{ env.local_release }}
       - run: |
           bash
           git clone https://github.com/tiann/KernelSU ~/remote && cd ~/remote
