@@ -26,21 +26,18 @@ jobs:
         if: ${{ env.kernelsu_release }} != ${{ env.local_release }}
         run: |
           bash
-          git config user.name github-actions[bot]
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git config --global user.name github-actions[bot]
+          git config --global user.email 41898282+github-actions[bot]@users.noreply.github.com
           git clone https://github.com/tiann/KernelSU ~/remote && cd ~/remote
-          echo "KSU_GIT_VERSION := $(shell git rev-list --count HEAD)" >> $GITHUB_ENV
-          KSU_VERSION=$[10000+${{ env.KSU_GIT_VERSION }}+200]
-          echo $KSU_VERSION >> $GITHUB_ENV
+          echo "KSU_GIT_VERSION=$(shell git rev-list --count HEAD)" >> $GITHUB_ENV
+          echo "KSU_VERSION=$[10000+${{ env.KSU_GIT_VERSION }}+200]" >> $GITHUB_ENV
           git clone https://github.com/uwu-gl/kernel_oneplus_sdm845_drivers_kernelsu ~/staging -b main-wip
           cd ~/staging && rm -rf *
           cp -r ~/remote/kernel/* .
           rm -f setup.sh
-          touch ksu_version.txt 
-          echo "${{ env.kernelsu_release }}" > ksu_version.txt 
-          nl Makefile | sed '19c ccflags-y += -DKSU_VERSION=${{ env.KSU_VERSION }}'
+          nl Makefile | sed '19,30c ccflags-y += -DKSU_VERSION=${{ env.KSU_VERSION }}'
           echo "### Diffs" && git diff && echo "### End of diffs"
-          git add . && git commit -sm "drivers: kernelsu: Bump version to ${{ needs.check_kernelsu_update.outputs.kernelsu_release }}"
+          git add . && git commit -sm "drivers: kernelsu: Bump version to ${{ env.KSU_VERSION }} (${{ env.kernelsu_release }})"
           git push
           
         
