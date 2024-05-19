@@ -24,7 +24,7 @@ jobs:
         
       - name: Update
         if: ${{ env.kernelsu_release }} != ${{ env.local_release }}
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
       - run: |
           bash
           git clone https://github.com/tiann/KernelSU ~/remote && cd ~/remote
