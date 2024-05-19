@@ -21,16 +21,12 @@ jobs:
         run: |
           echo "kernelsu_release=`curl https://api.github.com/repos/tiann/KernelSU/releases/latest | jq -r .tag_name`" >> $GITHUB_ENV
           echo "local_release=$(cat ksu_version.txt)" >> $GITHUB_ENV
-          
-      - name: Set up environment
+        
+      - name: Update
         if: ${{ env.kernelsu_release }} != ${{ env.local_release }}
         run: |
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-
-      - name: Update
-        if: ${{ env.kernelsu_release }} != ${{ env.local_release }}
-        run: |
           git clone https://github.com/tiann/KernelSU ~/remote
           git clone https://github.com/uwu-gl/kernel_oneplus_sdm845_drivers_kernelsu ~/staging -b main-wip
           cd ~/staging && rm -rf *
