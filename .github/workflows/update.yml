@@ -38,7 +38,10 @@ jobs:
           echo "${{ env.kernelsu_release }}" > ksu_version.txt
           echo "### Diffs" && git diff && echo "### End of diffs"
           git add . && git commit -sm "drivers: kernelsu: Bump version to $version_ksu (${{ env.kernelsu_release }})"
-          git push
+      
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+
           
         
         
