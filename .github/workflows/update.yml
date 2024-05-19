@@ -24,7 +24,7 @@ jobs:
         
       - name: Update
         if: ${{ env.kernelsu_release }} != ${{ env.local_release }}
-      - uses: actions/checkout@v4
+        uses: actions/checkout@v4
       - run: |
           bash
           git clone https://github.com/tiann/KernelSU ~/remote && cd ~/remote
@@ -36,8 +36,8 @@ jobs:
           sed -i "19,30c ccflags-y += -DKSU_VERSION=$version_ksu" ./Makefile
           echo "${{ env.kernelsu_release }}" > ksu_version.txt
           echo "### Diffs" && git diff && echo "### End of diffs"
-          git config --local user.name gl-automation
-          git config --local user.email moegluwu01@gmail.com
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add . && git commit -sm "drivers: kernelsu: Bump version to $version_ksu (${{ env.kernelsu_release }})"
 
           
