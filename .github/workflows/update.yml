@@ -9,7 +9,7 @@ jobs:
       - name: Checkout local repository
         uses: actions/checkout@v3
         with:
-          repository: Grill-Laux/kernel_oneplus_sdm845_drivers_kernelsu
+          repository: uwu-gl/kernel_oneplus_sdm845_drivers_kernelsu
           ref: main
           
       - name: Install common package
