@@ -24,7 +24,8 @@ jobs:
         
       - name: Update
         if: ${{ env.kernelsu_release }} != ${{ env.local_release }}
-        run: |
+      - uses: actions/checkout@v4
+      - run: |
           bash
           git clone https://github.com/tiann/KernelSU ~/remote && cd ~/remote
           version_ksu=$[$(git rev-list --count HEAD)+10200]
@@ -38,12 +39,6 @@ jobs:
           git config --local user.name gl-automation
           git config --local user.email moegluwu01@gmail.com
           git add . && git commit -sm "drivers: kernelsu: Bump version to $version_ksu (${{ env.kernelsu_release }})"
-      
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.TOKEN }}
-          branch: main-wip
 
           
         
