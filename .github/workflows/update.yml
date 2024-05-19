@@ -44,7 +44,7 @@ jobs:
     - name: Update
       run: |
         git clone https://github.com/tiann/KernelSU ~/remote
-        git clone https://github.com/uwu-gl/kernel_oneplus_sdm845_drivers_kernelsu ~/staging
+        git clone https://github.com/uwu-gl/kernel_oneplus_sdm845_drivers_kernelsu ~/staging -b main-wip
         cd ~/staging && rm -rf *
         cp ~/remote/kernel/* .
         rm -f setup.sh
