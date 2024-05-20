@@ -5,33 +5,31 @@ on:
 jobs: 
   check-update:
     runs-on: ubuntu-latest
-    steps:
+    steps:          
+      - name: Install common package
+        run: |
+          sudo apt update
+          sudo apt install -y curl jq bash
+      
       - name: Checkout local repository
         uses: actions/checkout@v3
         with:
           repository: uwu-gl/kernel_oneplus_sdm845_drivers_kernelsu
           ref: main-wip
-          
-      - name: Install common package
-        run: |
-          sudo apt update
-          sudo apt install -y curl jq bash
-          
+      
       - name: Check remote release
         run: |
           echo "kernelsu_release=`curl https://api.github.com/repos/tiann/KernelSU/releases/latest | jq -r .tag_name`" >> $GITHUB_ENV
           echo "local_release=$(cat ksu_version.txt)" >> $GITHUB_ENV
-        
-      - uses: actions/checkout@v4
-        if: ${{ env.kernelsu_release }} != ${{ env.local_release }}
+          
       - run: |
           bash
-          git clone https://github.com/tiann/KernelSU ~/remote && cd ~/remote
+          rm -rf *
+          git clone https://github.com/tiann/KernelSU remote && cd remote
           version_ksu=$[$(git rev-list --count HEAD)+10200]
-          git clone https://github.com/uwu-gl/kernel_oneplus_sdm845_drivers_kernelsu ~/staging -b main-wip
-          cd ~/staging && rm -rf *
-          cp -r ~/remote/kernel/* .
-          rm -f setup.sh
+          cd - 
+          cp -r remote/kernel/* .
+          rm -rf setup.sh remote
           sed -i "19,30c ccflags-y += -DKSU_VERSION=$version_ksu" ./Makefile
           echo "${{ env.kernelsu_release }}" > ksu_version.txt
           echo "### Diffs" && git diff && echo "### End of diffs"
