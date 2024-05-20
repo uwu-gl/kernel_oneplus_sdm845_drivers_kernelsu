@@ -2,57 +2,41 @@ name: Update KernelSU
 on: 
   workflow_call:
   workflow_dispatch:
+permissions: write-all
 jobs: 
-  check-if-update:
+  check-update:
     runs-on: ubuntu-latest
-    steps:
+    steps:          
+      - name: Set up environment
+        run: |
+          sudo apt update
+          sudo apt install -y curl jq bash
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+        
       - name: Checkout local repository
         uses: actions/checkout@v3
         with:
           repository: uwu-gl/kernel_oneplus_sdm845_drivers_kernelsu
           ref: main
-          
-      - name: Install common package
-        run: |
-          sudo apt update
-          sudo apt install -y curl jq
-          
+      
       - name: Check remote release
         run: |
-          kernelsu_release=`curl https://api.github.com/repos/tiann/KernelSU/releases/latest | jq -r .tag_name`
-          local_release=$(cat ksu_version.txt)
-          echo $kernelsu_release
-          echo $local_release
-          echo kernelsu_release=$kernelsu_release >> $GITHUB_OUTPUT
-          echo local_release=$local_release >> $GITHUB_OUTPUT
-    outputs:
-      kernelsu_release: ${{ steps.check_kernelsu_release.outputs.kernelsu_release }}
-      local_release: ${{ steps.check_kernelsu_release.outputs.local_release }}
-
-  update:
-    needs: check-if-update
-    if: needs.check_kernelsu_update.outputs.kernelsu_release != needs.check_kernelsu_update.outputs.local_release
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps: 
-    - name: Set up environment
-      run: |
-        git config user.name github-actions[bot]
-        git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-
-    - name: Update
-      run: |
-        git clone https://github.com/tiann/KernelSU ~/remote
-        git clone https://github.com/uwu-gl/kernel_oneplus_sdm845_drivers_kernelsu ~/staging
-        cd ~/staging && rm -rf *
-        cp ~/remote/kernel/* .
-        rm -f setup.sh
-        touch ksu_version.txt 
-        echo "${{ needs.check_kernelsu_update.outputs.kernelsu_release }}" > ksu_version.txt 
-        echo "### Diffs" && git diff && echo "### End of diffs"
-        git add . && git commit -sm "drivers: kernelsu: Bump version to ${{ needs.check_kernelsu_update.outputs.kernelsu_release }}"
-        git push
-          
-        
-        
+          echo "kernelsu_release=`curl https://api.github.com/repos/tiann/KernelSU/releases/latest | jq -r .tag_name`" >> $GITHUB_ENV
+          echo "local_release=$(cat ksu_version.txt)" >> $GITHUB_ENV
+      
+      - name: Update    
+        if: ${{ env.kernelsu_release }} != ${{ env.local_release }}
+        run: |
+          bash
+          rm -rf *
+          git clone https://github.com/tiann/KernelSU remote && cd remote
+          version_ksu=$[$(git rev-list --count HEAD)+10200]
+          cd - 
+          cp -r remote/kernel/* .
+          rm -rf setup.sh remote
+          sed -i "19,30c ccflags-y += -DKSU_VERSION=$version_ksu" ./Makefile
+          echo "${{ env.kernelsu_release }}" > ksu_version.txt
+          echo "### Diffs" && git diff && echo "### End of diffs"
+          git add . && git commit -sm "drivers: kernelsu: Bump version to $version_ksu (${{ env.kernelsu_release }})"
+          git push
