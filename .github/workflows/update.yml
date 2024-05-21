@@ -40,3 +40,11 @@ jobs:
           echo "### Diffs" && git diff && echo "### End of diffs"
           git add . && git commit -sm "drivers: kernelsu: Bump version to $version_ksu (${{ env.kernelsu_release }})"
           git push
+      
+      - name: Repository Dispatch
+        if: ${{ env.kernelsu_release }} != ${{ env.local_release }}
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.TOKEN }}
+          repository: uwu-gl/kernel_oneplus_sdm845
+          event-type: ksu_merge_update
