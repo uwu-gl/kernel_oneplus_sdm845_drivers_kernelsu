@@ -34,8 +34,7 @@ jobs:
           git clone https://github.com/tiann/KernelSU remote && cd remote
           version_ksu=$[$(git rev-list --count HEAD)+10200]
           cd - 
-          cp -r remote/kernel/* .
-          rm -rf setup.sh remote
+          rm -rf remote
           sed -i "19,30c ccflags-y += -DKSU_VERSION=$version_ksu" ./Makefile
           echo "${{ env.kernelsu_release }}" > ksu_version.txt
           echo "### Diffs" && git diff && echo "### End of diffs"
