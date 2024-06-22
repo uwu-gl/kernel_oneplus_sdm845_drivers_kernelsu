@@ -1,8 +1,6 @@
 name: Update KernelSU
 on: 
   workflow_dispatch:
-  schedule:
-    - cron: "0 8 * * *"
 permissions: write-all
 jobs: 
   check-update:
